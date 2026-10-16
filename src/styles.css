@@ -1,0 +1,102 @@
+:root {
+  color: #e9f2ec;
+  background: #10231a;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+.shell {
+  align-items: center;
+  background: radial-gradient(circle at top right, #27533b, #10231a 55%);
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.card {
+  background: rgba(22, 52, 37, 0.82);
+  border: 1px solid rgba(177, 225, 192, 0.2);
+  border-radius: 24px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.24);
+  max-width: 620px;
+  padding: 48px;
+  width: 100%;
+}
+
+.card-header,
+.card-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-header {
+  gap: 0;
+}
+
+.card-content {
+  gap: 16px;
+}
+
+.brand-mark {
+  align-items: center;
+  background: #9bd9ac;
+  border-radius: 14px;
+  color: #10231a;
+  display: flex;
+  height: 52px;
+  justify-content: center;
+  margin-bottom: 30px;
+  width: 52px;
+}
+
+.eyebrow {
+  color: #9bd9ac;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  margin: 0 0 18px;
+  text-transform: uppercase;
+}
+
+.card-title {
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  letter-spacing: -0.07em;
+  line-height: 0.95;
+  margin: 0;
+}
+
+.card-description {
+  color: #c3d8c9;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin: 28px 0 0;
+}
+
+.status {
+  align-items: center;
+  color: #d9eddd;
+  display: flex;
+  gap: 10px;
+}
+
+.status-icon {
+  align-items: center;
+  background: rgba(118, 220, 145, 0.14);
+  border-radius: 50%;
+  color: #76dc91;
+  display: flex;
+  height: 32px;
+  justify-content: center;
+  width: 32px;
+}
