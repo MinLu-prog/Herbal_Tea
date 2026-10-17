@@ -8,13 +8,21 @@
     "dev:client": "vite",
     "dev:server": "node server/index.js",
     "build": "vite build",
-    "start": "node server/index.js"
+    "start": "node server/index.js",
+    "db:seed": "node server/db/seed.js"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^18.0.8",
     "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.3",
     "lucide-react": "^0.468.0",
+    "multer": "^2.4.0",
+    "mysql2": "^3.24.6",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "sharp": "^0.35.5"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^5.0.4",
