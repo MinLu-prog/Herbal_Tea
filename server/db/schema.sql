@@ -17,17 +17,27 @@ CREATE TABLE IF NOT EXISTS categories (
 ) DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS products (
-  id          INT AUTO_INCREMENT PRIMARY KEY,
-  category_id INT NULL,
-  name_en     VARCHAR(150) NOT NULL,
-  name_mm     VARCHAR(150) NOT NULL,
-  flavor_en   VARCHAR(100),
-  flavor_mm   VARCHAR(100),
-  size        VARCHAR(50),
-  price       INT UNSIGNED NOT NULL,
-  in_stock    TINYINT(1) NOT NULL DEFAULT 1,
-  image_url   VARCHAR(255),
-  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  id             INT AUTO_INCREMENT PRIMARY KEY,
+  category_id    INT NULL,
+  name_en        VARCHAR(150) NOT NULL,
+  name_mm        VARCHAR(150) NOT NULL,
+  flavor_en      VARCHAR(100),
+  flavor_mm      VARCHAR(100),
+  description_en TEXT,
+  description_mm TEXT,
+  size           VARCHAR(50),
+  price          INT UNSIGNED NOT NULL,
+  in_stock       TINYINT(1) NOT NULL DEFAULT 1,
+  is_active      TINYINT(1) NOT NULL DEFAULT 1,  -- 0 = deleted (can be restored)
+  image_url      VARCHAR(255),
+  created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
+) DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- Shop contacts shown on the order buttons (keys: viber, phone, messenger)
+CREATE TABLE IF NOT EXISTS settings (
+  setting_key   VARCHAR(50) PRIMARY KEY,
+  setting_value VARCHAR(255) NOT NULL DEFAULT '',
+  updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;

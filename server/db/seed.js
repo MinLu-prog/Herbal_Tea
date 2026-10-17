@@ -4,9 +4,10 @@ import fs from 'node:fs/promises'
 import bcrypt from 'bcryptjs'
 import { db } from '../db.js'
 
-const schema = await fs.readFile(new URL('./schema.sql', import.meta.url), 'utf8')
+const schema = (await fs.readFile(new URL('./schema.sql', import.meta.url), 'utf8'))
+  .replace(/--.*$/gm, '') // drop SQL comments
 for (const statement of schema.split(';').map((s) => s.trim())) {
-  if (statement && !statement.startsWith('--')) await db.query(statement)
+  if (statement) await db.query(statement)
 }
 
 const { ADMIN_USERNAME, ADMIN_PASSWORD } = process.env
@@ -30,6 +31,16 @@ if (count === 0) {
     ]],
   )
 }
+
+// Initial contacts from .env; after this the admin edits them in the panel.
+await db.query(
+  'INSERT IGNORE INTO settings (setting_key, setting_value) VALUES ?',
+  [[
+    ['viber', process.env.SHOP_VIBER || ''],
+    ['phone', process.env.SHOP_PHONE || ''],
+    ['messenger', process.env.SHOP_MESSENGER || ''],
+  ]],
+)
 
 console.log('Database ready. Admin:', ADMIN_USERNAME)
 await db.end()

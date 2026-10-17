@@ -7,8 +7,12 @@ import { saveImage, deleteImage } from '../utils/image.js'
 const router = Router()
 router.use(requireAdmin)
 
-const PRODUCT_FIELDS = ['category_id', 'name_en', 'name_mm', 'flavor_en', 'flavor_mm', 'size', 'price', 'in_stock']
+const PRODUCT_FIELDS = [
+  'category_id', 'name_en', 'name_mm', 'flavor_en', 'flavor_mm',
+  'description_en', 'description_mm', 'size', 'price', 'in_stock',
+]
 const CATEGORY_FIELDS = ['name_en', 'name_mm', 'sort_order']
+const SETTING_KEYS = ['viber', 'phone', 'messenger']
 
 function badRequest(message) {
   const error = new Error(message)
@@ -50,6 +54,7 @@ async function findProduct(id) {
 
 // ---------- Products ----------
 
+// Includes deleted products (is_active = 0) so the admin can restore them.
 router.get('/products', async (_request, response) => {
   const [rows] = await db.query('SELECT * FROM products ORDER BY id DESC')
   response.json(rows)
@@ -83,16 +88,27 @@ router.put('/products/:id', upload.single('image'), async (request, response) =>
 
 router.patch('/products/:id/stock', async (request, response) => {
   const product = await findProduct(request.params.id)
-  const inStock = request.body?.in_stock ? 1 : 0
+  const inStock = [true, 1, '1', 'true'].includes(request.body?.in_stock) ? 1 : 0
   await db.query('UPDATE products SET in_stock = ? WHERE id = ?', [inStock, product.id])
   response.json({ ...product, in_stock: inStock })
 })
 
+// Soft delete: hides the product from visitors. Use ?permanent=1 to remove it and its image for good.
 router.delete('/products/:id', async (request, response) => {
   const product = await findProduct(request.params.id)
-  await db.query('DELETE FROM products WHERE id = ?', [product.id])
-  await deleteImage(product.image_url)
+  if (request.query.permanent === '1') {
+    await db.query('DELETE FROM products WHERE id = ?', [product.id])
+    await deleteImage(product.image_url)
+  } else {
+    await db.query('UPDATE products SET is_active = 0 WHERE id = ?', [product.id])
+  }
   response.json({ ok: true })
+})
+
+router.patch('/products/:id/restore', async (request, response) => {
+  const product = await findProduct(request.params.id)
+  await db.query('UPDATE products SET is_active = 1 WHERE id = ?', [product.id])
+  response.json({ ...product, is_active: 1 })
 })
 
 // ---------- Categories ----------
@@ -125,6 +141,21 @@ router.put('/categories/:id', async (request, response) => {
 router.delete('/categories/:id', async (request, response) => {
   await db.query('DELETE FROM categories WHERE id = ?', [request.params.id])
   response.json({ ok: true })
+})
+
+// ---------- Settings (shop contacts) ----------
+
+// Body: any of { viber, phone, messenger }
+router.put('/settings', async (request, response) => {
+  const rows = SETTING_KEYS
+    .filter((key) => typeof request.body?.[key] === 'string')
+    .map((key) => [key, request.body[key].trim()])
+  if (rows.length === 0) throw badRequest('Nothing to update')
+  await db.query(
+    'INSERT INTO settings (setting_key, setting_value) VALUES ? ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)',
+    [rows],
+  )
+  response.json(Object.fromEntries(rows))
 })
 
 export default router

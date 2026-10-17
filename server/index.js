@@ -2,6 +2,7 @@ import 'dotenv/config'
 import path from 'node:path'
 import express from 'express'
 import cookieParser from 'cookie-parser'
+import helmet from 'helmet'
 import publicRoutes from './routes/public.js'
 import authRoutes from './routes/auth.js'
 import adminRoutes from './routes/admin.js'
@@ -13,6 +14,8 @@ const app = express()
 const port = Number(process.env.PORT) || 3000
 
 app.set('trust proxy', 1)
+// Security headers; CSP off so images, fonts and order links keep working.
+app.use(helmet({ contentSecurityPolicy: false }))
 app.use(express.json())
 app.use(cookieParser())
 
