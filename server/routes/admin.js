@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import bcrypt from 'bcryptjs'
 import { db } from '../db.js'
 import { requireAdmin } from '../middleware/auth.js'
 import { upload } from '../middleware/upload.js'
@@ -14,7 +15,13 @@ const PRODUCT_FIELDS = [
 const CATEGORY_FIELDS = ['name_en', 'name_mm', 'sort_order']
 const SETTING_KEYS = ['viber', 'phone', 'messenger']
 
-function badRequest(message) {
+export function checkPassword(password) {
+  if (typeof password !== 'string' || password.length < 8) {
+    throw badRequest('Password must be at least 8 characters')
+  }
+}
+
+export function badRequest(message) {
   const error = new Error(message)
   error.status = 400
   return error
@@ -156,6 +163,39 @@ router.put('/settings', async (request, response) => {
     [rows],
   )
   response.json(Object.fromEntries(rows))
+})
+
+// ---------- Admin accounts ----------
+
+router.get('/admins', async (_request, response) => {
+  const [rows] = await db.query('SELECT id, username, created_at FROM admins ORDER BY id')
+  response.json(rows)
+})
+
+router.post('/admins', async (request, response) => {
+  const username = String(request.body?.username ?? '').trim()
+  const { password } = request.body ?? {}
+  if (!/^[a-zA-Z0-9._-]{3,50}$/.test(username)) {
+    throw badRequest('Username must be 3-50 letters, numbers, dot, dash or underscore')
+  }
+  checkPassword(password)
+
+  const hash = await bcrypt.hash(password, 10)
+  try {
+    const [result] = await db.query('INSERT INTO admins (username, password_hash) VALUES (?, ?)', [username, hash])
+    response.status(201).json({ id: result.insertId, username })
+  } catch (error) {
+    if (error.code === 'ER_DUP_ENTRY') throw badRequest('Username already exists')
+    throw error
+  }
+})
+
+// You can't delete your own account, so at least one admin always remains.
+router.delete('/admins/:id', async (request, response) => {
+  if (Number(request.params.id) === request.admin.id) throw badRequest("You can't delete your own account")
+  const [result] = await db.query('DELETE FROM admins WHERE id = ?', [request.params.id])
+  if (result.affectedRows === 0) return response.status(404).json({ error: 'Admin not found' })
+  response.json({ ok: true })
 })
 
 export default router

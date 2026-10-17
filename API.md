@@ -75,6 +75,13 @@ Clears the cookie → `{ "ok": true }`
 ### `GET /api/auth/me`
 → `{ "username": "admin" }` if logged in, otherwise `401`. Use it to check the admin page session.
 
+### `PUT /api/auth/password` (login required)
+Change your own password.
+```json
+{ "current_password": "admin123", "new_password": "at-least-8-chars" }
+```
+→ `{ "ok": true }` · `400` if the current password is wrong or the new one is shorter than 8 characters.
+
 ---
 
 ## Admin — Products (login required)
@@ -147,6 +154,30 @@ Send any of `viber`, `phone`, `messenger`; other keys are ignored.
 { "viber": "+959111222333" }
 ```
 → `{ "viber": "+959111222333" }`
+
+---
+
+## Admin — Accounts (login required)
+
+### `GET /api/admin/admins`
+```json
+[{ "id": 1, "username": "admin", "created_at": "..." }]
+```
+Passwords are never returned.
+
+### `POST /api/admin/admins`
+```json
+{ "username": "thida", "password": "at-least-8-chars" }
+```
+- `username`: 3–50 letters, numbers, `.` `-` `_`
+- `password`: at least 8 characters
+
+→ `201 { "id": 2, "username": "thida" }` · `400` if invalid or the username is taken.
+
+### `DELETE /api/admin/admins/:id`
+→ `{ "ok": true }`. You can't delete your own account, so at least one admin always remains. A deleted admin is logged out immediately.
+
+The first admin is created by `npm run db:seed` from `ADMIN_USERNAME` / `ADMIN_PASSWORD` in `.env`. Running it again with an existing username resets that admin's password.
 
 ---
 

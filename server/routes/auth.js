@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { db } from '../db.js'
 import { requireAdmin } from '../middleware/auth.js'
+import { checkPassword } from './admin.js'
 
 const router = Router()
 const WEEK = 7 * 24 * 60 * 60 * 1000
@@ -53,6 +54,19 @@ router.post('/logout', (_request, response) => {
 
 router.get('/me', requireAdmin, (request, response) => {
   response.json({ username: request.admin.username })
+})
+
+// Logged-in admin changes their own password.
+router.put('/password', requireAdmin, async (request, response) => {
+  const { current_password, new_password } = request.body ?? {}
+  const [[admin]] = await db.query('SELECT password_hash FROM admins WHERE id = ?', [request.admin.id])
+  if (!(await bcrypt.compare(String(current_password ?? ''), admin.password_hash))) {
+    return response.status(400).json({ error: 'Current password is wrong' })
+  }
+  checkPassword(new_password)
+  const hash = await bcrypt.hash(new_password, 10)
+  await db.query('UPDATE admins SET password_hash = ? WHERE id = ?', [hash, request.admin.id])
+  response.json({ ok: true })
 })
 
 export default router
