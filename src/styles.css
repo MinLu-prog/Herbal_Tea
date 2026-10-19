@@ -1,102 +1,292 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/geist";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-cream: #f7f3e8;
+  --color-paper: #fffdf7;
+  --color-forest: #234936;
+  --color-sage: #789b78;
+  --color-leaf: #a8c39a;
+  --color-brown: #704f38;
+  --color-ink: #29352b;
+  --color-muted: #718073;
+}
+
+@theme inline {
+  --font-heading: var(--font-sans);
+  --font-sans: 'Geist Variable', sans-serif;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
 :root {
-  color: #e9f2ec;
-  background: #10231a;
-  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
 }
 
-* {
-  box-sizing: border-box;
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
 }
 
-body {
-  margin: 0;
-  min-width: 320px;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+
+  button,
+  a,
+  input,
+  textarea,
+  select {
+    -webkit-tap-highlight-color: transparent;
+  }
 }
 
-.shell {
-  align-items: center;
-  background: radial-gradient(circle at top right, #27533b, #10231a 55%);
-  display: flex;
-  justify-content: center;
-  min-height: 100vh;
-  padding: 24px;
+/* Keep controls and reading comfortable for older users in both languages. */
+.elder-friendly {
+  font-size: 1.0625rem;
 }
 
-.card {
-  background: rgba(22, 52, 37, 0.82);
-  border: 1px solid rgba(177, 225, 192, 0.2);
-  border-radius: 24px;
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.24);
-  max-width: 620px;
-  padding: 48px;
-  width: 100%;
+.elder-friendly :where(button, a) {
+  line-height: 1.45;
 }
 
-.card-header,
-.card-content {
-  display: flex;
-  flex-direction: column;
+.elder-friendly :where(button:not([aria-label^='Show slide'])) {
+  min-height: 2.75rem;
 }
 
-.card-header {
-  gap: 0;
+.elder-friendly :where(input, textarea, select) {
+  font-size: 1rem;
 }
 
-.card-content {
-  gap: 16px;
+.elder-friendly :where(p) {
+  line-height: 1.7;
 }
 
-.brand-mark {
-  align-items: center;
-  background: #9bd9ac;
-  border-radius: 14px;
-  color: #10231a;
-  display: flex;
-  height: 52px;
-  justify-content: center;
-  margin-bottom: 30px;
-  width: 52px;
+.elder-friendly :where(button, a, input, textarea, select):focus-visible {
+  outline: 3px solid #047857;
+  outline-offset: 3px;
 }
 
-.eyebrow {
-  color: #9bd9ac;
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  margin: 0 0 18px;
-  text-transform: uppercase;
+.elder-friendly :where(.text-slate-400, .text-slate-500, .text-slate-600) {
+  color: #475569;
 }
 
-.card-title {
-  font-size: clamp(2.5rem, 8vw, 5rem);
-  letter-spacing: -0.07em;
-  line-height: 0.95;
-  margin: 0;
+.elder-friendly :where(h1, h2, h3) {
+  line-height: 1.25;
 }
 
-.card-description {
-  color: #c3d8c9;
-  font-size: 1.1rem;
-  line-height: 1.6;
-  margin: 28px 0 0;
+.motion-fade-up {
+  animation: motion-fade-up 700ms ease-out both;
 }
 
-.status {
-  align-items: center;
-  color: #d9eddd;
-  display: flex;
-  gap: 10px;
+.motion-fade-up-delay {
+  animation: motion-fade-up 700ms 180ms ease-out both;
 }
 
-.status-icon {
-  align-items: center;
-  background: rgba(118, 220, 145, 0.14);
-  border-radius: 50%;
-  color: #76dc91;
-  display: flex;
-  height: 32px;
-  justify-content: center;
-  width: 32px;
+.motion-card {
+  animation: motion-fade-up 650ms ease-out both;
+}
+
+.motion-card:nth-child(2) {
+  animation-delay: 90ms;
+}
+
+.motion-card:nth-child(3) {
+  animation-delay: 180ms;
+}
+
+.motion-card:nth-child(4) {
+  animation-delay: 270ms;
+}
+
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(22px);
+}
+
+.scroll-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 700ms ease-out, transform 700ms ease-out;
+}
+
+.scroll-reveal .motion-card {
+  opacity: 0;
+  transform: translateY(18px);
+  animation: none;
+}
+
+.scroll-reveal.is-visible .motion-card {
+  animation: motion-fade-up 650ms ease-out both;
+}
+
+.motion-float {
+  animation: motion-float 5s ease-in-out infinite;
+}
+
+@keyframes motion-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes motion-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .elder-friendly *,
+  .elder-friendly *::before,
+  .elder-friendly *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+
+  .motion-fade-up,
+  .motion-fade-up-delay,
+  .motion-card,
+  .scroll-reveal,
+  .motion-float {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* Myanmar glyphs need extra vertical room for comfortable reading. */
+.language-mm {
+  font-size: 1rem;
+}
+
+.language-mm :where(p, h1, h2, h3, button, a, span) {
+  line-height: 1.9;
+}
+
+.language-mm :where(h1, h2, h3) {
+  letter-spacing: 0;
+}
+
+.language-mm :where(p) {
+  margin-bottom: 0.5rem;
 }

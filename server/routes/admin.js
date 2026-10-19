@@ -13,7 +13,12 @@ const PRODUCT_FIELDS = [
   'description_en', 'description_mm', 'size', 'price', 'in_stock',
 ]
 const CATEGORY_FIELDS = ['name_en', 'name_mm', 'sort_order']
-const SETTING_KEYS = ['viber', 'phone', 'messenger']
+const SETTING_KEYS = [
+  'viber', 'phone',
+  'about_eyebrow_en', 'about_eyebrow_mm',
+  'about_title_en', 'about_title_mm',
+  'about_description_en', 'about_description_mm',
+]
 
 export function checkPassword(password) {
   if (typeof password !== 'string' || password.length < 8) {
@@ -62,35 +67,64 @@ async function findProduct(id) {
 // ---------- Products ----------
 
 // Includes deleted products (is_active = 0) so the admin can restore them.
+async function productWithImages(product) {
+  const [images] = await db.query('SELECT id, image_url, sort_order FROM product_images WHERE product_id = ? ORDER BY sort_order, id', [product.id])
+  return { ...product, images: images.map((image) => image.image_url) }
+}
+
+function uploadedFiles(request) {
+  return [
+    ...(request.files?.images || []),
+    ...(request.files?.image || []),
+  ]
+}
+
 router.get('/products', async (_request, response) => {
   const [rows] = await db.query('SELECT * FROM products ORDER BY id DESC')
-  response.json(rows)
+  response.json(await Promise.all(rows.map(productWithImages)))
 })
 
-router.post('/products', upload.single('image'), async (request, response) => {
+router.post('/products', upload.fields([{ name: 'images', maxCount: 8 }, { name: 'image', maxCount: 1 }]), async (request, response) => {
   const data = productData(request.body ?? {}, true)
-  if (request.file) data.image_url = await saveImage(request.file.buffer)
+  const files = uploadedFiles(request)
+  const savedImages = []
+  for (const file of files) savedImages.push(await saveImage(file.buffer))
+  if (savedImages[0]) data.image_url = savedImages[0]
 
   try {
     const [result] = await db.query('INSERT INTO products SET ?', [data])
-    response.status(201).json(await findProduct(result.insertId))
+    if (savedImages.length > 0) {
+      await db.query('INSERT INTO product_images (product_id, image_url, sort_order) VALUES ?', [savedImages.map((url, index) => [result.insertId, url, index])])
+    }
+    response.status(201).json(await productWithImages(await findProduct(result.insertId)))
   } catch (error) {
-    await deleteImage(data.image_url)
+    await Promise.all(savedImages.map(deleteImage))
     throw error
   }
 })
 
 // Edit any fields (e.g. only { price }) and optionally replace the image.
-router.put('/products/:id', upload.single('image'), async (request, response) => {
+router.put('/products/:id', upload.fields([{ name: 'images', maxCount: 8 }, { name: 'image', maxCount: 1 }]), async (request, response) => {
   const product = await findProduct(request.params.id)
   const data = productData(request.body ?? {}, false)
-  if (request.file) data.image_url = await saveImage(request.file.buffer)
+  const files = uploadedFiles(request)
+  const savedImages = []
+  for (const file of files) savedImages.push(await saveImage(file.buffer))
+  if (savedImages[0]) data.image_url = savedImages[0]
 
-  if (Object.keys(data).length > 0) {
-    await db.query('UPDATE products SET ? WHERE id = ?', [data, product.id])
+  try {
+    if (Object.keys(data).length > 0) {
+      await db.query('UPDATE products SET ? WHERE id = ?', [data, product.id])
+    }
+    if (savedImages.length > 0) {
+      await db.query('UPDATE product_images SET sort_order = sort_order + ? WHERE product_id = ?', [savedImages.length, product.id])
+      await db.query('INSERT INTO product_images (product_id, image_url, sort_order) VALUES ?', [savedImages.map((url, index) => [product.id, url, index])])
+    }
+  } catch (error) {
+    await Promise.all(savedImages.map(deleteImage))
+    throw error
   }
-  if (request.file) await deleteImage(product.image_url)
-  response.json(await findProduct(product.id))
+  response.json(await productWithImages(await findProduct(product.id)))
 })
 
 router.patch('/products/:id/stock', async (request, response) => {
@@ -105,7 +139,8 @@ router.delete('/products/:id', async (request, response) => {
   const product = await findProduct(request.params.id)
   if (request.query.permanent === '1') {
     await db.query('DELETE FROM products WHERE id = ?', [product.id])
-    await deleteImage(product.image_url)
+    const [images] = await db.query('SELECT image_url FROM product_images WHERE product_id = ?', [product.id])
+    await Promise.all([product.image_url, ...images.map((image) => image.image_url)].filter(Boolean).map(deleteImage))
   } else {
     await db.query('UPDATE products SET is_active = 0 WHERE id = ?', [product.id])
   }
@@ -152,7 +187,7 @@ router.delete('/categories/:id', async (request, response) => {
 
 // ---------- Settings (shop contacts) ----------
 
-// Body: any of { viber, phone, messenger }
+// Body: any of the keys listed in SETTING_KEYS.
 router.put('/settings', async (request, response) => {
   const rows = SETTING_KEYS
     .filter((key) => typeof request.body?.[key] === 'string')

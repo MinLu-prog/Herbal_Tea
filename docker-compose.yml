@@ -1,0 +1,44 @@
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-mya_nyo_tea}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$${MYSQL_ROOT_PASSWORD} --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: ${DB_PASSWORD:-root}
+      DB_NAME: ${DB_NAME:-mya_nyo_tea}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env before starting Docker}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in .env before starting Docker}
+      SHOP_VIBER: ${SHOP_VIBER:-}
+      SHOP_PHONE: ${SHOP_PHONE:-}
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    volumes:
+      - uploads-data:/app/uploads
+
+volumes:
+  mysql-data:
+  uploads-data:

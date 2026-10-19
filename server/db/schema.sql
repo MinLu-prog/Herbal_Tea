@@ -35,7 +35,16 @@ CREATE TABLE IF NOT EXISTS products (
   FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
 ) DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
--- Shop contacts shown on the order buttons (keys: viber, phone, messenger)
+CREATE TABLE IF NOT EXISTS product_images (
+  id          INT AUTO_INCREMENT PRIMARY KEY,
+  product_id  INT NOT NULL,
+  image_url   VARCHAR(255) NOT NULL,
+  sort_order  INT NOT NULL DEFAULT 0,
+  created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+) DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+-- Shop contacts shown on the order buttons (keys: viber, phone)
 CREATE TABLE IF NOT EXISTS settings (
   setting_key   VARCHAR(50) PRIMARY KEY,
   setting_value VARCHAR(255) NOT NULL DEFAULT '',

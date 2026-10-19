@@ -27,7 +27,6 @@ This software is an online product sales website for **Mya Nyo Herbal Tea**.
 | c | **Buy / Order** | Order in two ways:<br>• **Order via Viber**<br>• **Call to Order** (by phone) |
 | d | **Stock status** | Each product shows **IN STOCK** or **OUT OF STOCK** |
 | e | **Language switch** | Switch between **English (EN)** and **Myanmar (MM)** |
-| f | **Order via Messenger** | Customers can also order through **Facebook Messenger** |
 
 ---
 
@@ -76,4 +75,4 @@ This software is an online product sales website for **Mya Nyo Herbal Tea**.
 
 ## In One Sentence
 
-> Build a simple, mobile-friendly online tea shop for **Mya Nyo Herbal Tea** where visitors can browse products (in English or Myanmar), check stock, and order via **Viber, phone, or Facebook Messenger** — and where the admin can add, edit, delete products, change prices, and update stock status through a secure login-protected panel, with all product data stored in a database.
+> Build a simple, mobile-friendly online tea shop for **Mya Nyo Herbal Tea** where visitors can browse products (in English or Myanmar), check stock, and order via **Viber or phone** — and where the admin can add, edit, delete products, change prices, and update stock status through a secure login-protected panel, with all product data stored in a database.

@@ -53,10 +53,10 @@ One product (same shape as above). `404` if it doesn't exist or was deleted.
 ### `GET /api/settings`
 Shop contacts for the order buttons.
 ```json
-{ "viber": "+959000000000", "phone": "+959000000000", "messenger": "https://m.me/yourpage" }
+{ "viber": "+959000000000", "phone": "+959000000000" }
 ```
 Order links are built on the frontend:
-`tel:{phone}` · `viber://chat?number={encoded viber}` · `{messenger}`
+`tel:{phone}` · `viber://chat?number={encoded viber}`
 
 ---
 
@@ -149,7 +149,7 @@ Send any of `name_en`, `name_mm`, `sort_order` → `{ "ok": true }`
 ## Admin — Settings (login required)
 
 ### `PUT /api/admin/settings`
-Send any of `viber`, `phone`, `messenger`; other keys are ignored.
+Send any of `viber`, `phone`; other keys are ignored.
 ```json
 { "viber": "+959111222333" }
 ```
